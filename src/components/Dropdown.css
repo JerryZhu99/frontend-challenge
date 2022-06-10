@@ -1,0 +1,23 @@
+
+.dropdown {
+    text-align: start;
+    position: relative;
+    width: auto;
+}
+
+.dropdown-button {
+    height: 40px;
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 40px;
+    left: 0;   
+}
+
+
+.dropdown-button, .dropdown-options {
+    border-radius: 2px;
+    border: 1px solid #aaa;
+    padding: 8px;
+}
