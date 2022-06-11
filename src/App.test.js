@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('single item click works', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  await waitFor(() => screen.getByText(/select an item/i).click());
+  await waitFor(() => screen.getByText(/apple/i).click());
+  const el = screen.getByText(/value: "apple"/i);
+  expect(el).toBeInTheDocument();
 });

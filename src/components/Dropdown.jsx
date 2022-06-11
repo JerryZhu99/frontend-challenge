@@ -8,7 +8,16 @@ import styles from "./Dropdown.module.css";
  * A simple dropdown component supporting single and multiple selections.
  */
 function Dropdown(props) {
-  const { placeholder, value, options, onChange, multiple } = props;
+  const {
+    placeholder,
+    value,
+    options,
+    onChange,
+    multiple,
+    className,
+    buttonClassName,
+    optionClassName,
+  } = props;
   const [expanded, setExpanded] = useState(false);
 
   const selectedValues = useMemo(() => {
@@ -23,17 +32,27 @@ function Dropdown(props) {
   const optionsClassName = classNames(styles.dropdownOptions, {
     [styles.expanded]: expanded,
   });
-  const selectAllClassName = classNames(styles.dropdownOption, {
-    [styles.selected]: isAllSelected,
-  });
-  const selectNoneClassName = classNames(styles.dropdownOption, {
-    [styles.selected]: isNoneSelected,
-  });
+  const selectAllClassName = classNames(
+    optionClassName,
+    styles.dropdownOption,
+    {
+      [styles.selected]: isAllSelected,
+    }
+  );
+  const selectNoneClassName = classNames(
+    optionClassName,
+    styles.dropdownOption,
+    {
+      [styles.selected]: isNoneSelected,
+    }
+  );
 
   const dropdownClickHandler = () => setExpanded(!expanded);
 
   const optionAllHandler = () => {
-    onChange(isAllSelected ? [] : options.map(option => option?.value ?? option));
+    onChange(
+      isAllSelected ? [] : options.map((option) => option?.value ?? option)
+    );
   };
 
   const optionNoneHandler = () => {
@@ -57,21 +76,33 @@ function Dropdown(props) {
   };
 
   return (
-    <div className={styles.dropdown}>
-      <button className={styles.dropdownButton} onClick={dropdownClickHandler}>
+    <div
+      className={classNames(className, styles.dropdown)}
+      onBlur={(event) => {
+        if (event.currentTarget.contains(event.relatedTarget)) return;
+        setExpanded(false);
+      }}
+    >
+      <button
+        className={classNames(buttonClassName, styles.dropdownButton)}
+        onClick={dropdownClickHandler}
+        aria-haspopup="true"
+        aria-expanded={expanded}
+      >
         {dropdownLabel} {expanded ? "▴" : "▾"}
       </button>
       {expanded && (
         <div className={optionsClassName}>
           {multiple ? (
             <button className={selectAllClassName} onClick={optionAllHandler}>
-              Select All
+              <em>Select All</em>
             </button>
           ) : (
             <button className={selectNoneClassName} onClick={optionNoneHandler}>
-              None
+              <em>None</em>
             </button>
           )}
+
           {options.map((option) => {
             let { value, label } = option;
 
@@ -81,14 +112,17 @@ function Dropdown(props) {
             }
 
             const selected = selectedValues.has(value);
-
-            let optionClassName = classNames(styles.dropdownOption, {
-              [styles.selected]: selected,
-            });
+            const className = classNames(
+              optionClassName,
+              styles.dropdownOption,
+              {
+                [styles.selected]: selected,
+              }
+            );
 
             return (
               <button
-                className={optionClassName}
+                className={className}
                 key={value}
                 onClick={() => optionClickHandler(value)}
               >
@@ -105,9 +139,12 @@ function Dropdown(props) {
 Dropdown.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.any,
-  options: PropTypes.array,
+  options: PropTypes.array.isRequired,
   onChange: PropTypes.func,
   multiple: PropTypes.bool,
+  className: PropTypes.string,
+  buttonClassName: PropTypes.string,
+  optionClassName: PropTypes.string,
 };
 
 export default Dropdown;

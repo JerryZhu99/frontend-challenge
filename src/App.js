@@ -1,11 +1,12 @@
 import "./App.css";
 import Dropdown from "./components/Dropdown";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 function App() {
   const [value1, setValue1] = useState();
   const [value2, setValue2] = useState([]);
   const [value3, setValue3] = useState([]);
+  const largeItems = useMemo(() => new Array(10000).fill(0).map((_, i) => ({ value: i, label: `${i}`})), []);
   return (
     <div className="App">
       <div className="content">
@@ -13,7 +14,7 @@ function App() {
         <h2>Single Select Dropdown</h2>
         <Dropdown
           placeholder="Select an item"
-          options={["a", "b", "c", "d", "e"]}
+          options={["apple", "banana", "cherry", "durian", "eggplant"]}
           value={value1}
           onChange={(v) => setValue1(v)}
         />
@@ -21,7 +22,7 @@ function App() {
         <h2>Multiple Select Dropdown</h2>
         <Dropdown
           placeholder="Select items"
-          options={["a", "b", "c", "d", "e"]}
+          options={["red", "green", "blue", "cyan", "magenta", "yellow", "black", "orange", "indigo", "violet"]}
           value={value2}
           onChange={(v) => setValue2(v)}
           multiple
@@ -30,7 +31,7 @@ function App() {
         <h2>Large List</h2>
         <Dropdown
           placeholder="Select items"
-          options={new Array(10000).fill(0).map((_, i) => ({ value: i, label: `${i}`}))}
+          options={largeItems}
           value={value3}
           onChange={(v) => setValue3(v)}
           multiple
