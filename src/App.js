@@ -30,7 +30,7 @@ function App() {
         <h2>Large List</h2>
         <Dropdown
           placeholder="Select items"
-          options={new Array(10000).fill(0).map((_, i) => `${i}`)}
+          options={new Array(10000).fill(0).map((_, i) => ({ value: i, label: `${i}`}))}
           value={value3}
           onChange={(v) => setValue3(v)}
           multiple

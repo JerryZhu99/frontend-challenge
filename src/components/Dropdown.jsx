@@ -1,33 +1,45 @@
 import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
-import "./Dropdown.css";
+import styles from "./Dropdown.module.css";
 
+/**
+ * A simple dropdown component supporting single and multiple selections.
+ */
 function Dropdown(props) {
-  const [expanded, setExpanded] = useState(false);
   const { placeholder, value, options, onChange, multiple } = props;
+  const [expanded, setExpanded] = useState(false);
 
   const selectedValues = useMemo(() => {
     return new Set(value);
   }, [value]);
 
-  const selectionEmpty = !value || value.length === 0;
+  const isAllSelected = value?.length === options.length;
+  const isNoneSelected = value === undefined || value.length === 0;
   const selectedLabel = multiple ? value.join(", ") : value;
-  const dropdownLabel = selectionEmpty ? placeholder : selectedLabel;
+  const dropdownLabel = isNoneSelected ? placeholder : selectedLabel;
 
-  let optionsClassName = "dropdown-options";
-  if (expanded) optionsClassName += " expanded";
+  const optionsClassName = classNames(styles.dropdownOptions, {
+    [styles.expanded]: expanded,
+  });
+  const selectAllClassName = classNames(styles.dropdownOption, {
+    [styles.selected]: isAllSelected,
+  });
+  const selectNoneClassName = classNames(styles.dropdownOption, {
+    [styles.selected]: isNoneSelected,
+  });
 
   const dropdownClickHandler = () => setExpanded(!expanded);
 
   const optionAllHandler = () => {
-    onChange(selectedValues.size === options.length ? [] : options);
-  }
-  
+    onChange(isAllSelected ? [] : options.map(option => option?.value ?? option));
+  };
+
   const optionNoneHandler = () => {
     setExpanded(false);
-    onChange();
-  }
+    onChange(undefined);
+  };
 
   const optionClickHandler = (value) => {
     if (!multiple) {
@@ -45,42 +57,43 @@ function Dropdown(props) {
   };
 
   return (
-    <div className="dropdown">
-      <button className="dropdown-button" onClick={dropdownClickHandler}>
+    <div className={styles.dropdown}>
+      <button className={styles.dropdownButton} onClick={dropdownClickHandler}>
         {dropdownLabel} {expanded ? "▴" : "▾"}
       </button>
       {expanded && (
         <div className={optionsClassName}>
           {multiple ? (
-            <div className="dropdown-option" onClick={optionAllHandler}>
+            <button className={selectAllClassName} onClick={optionAllHandler}>
               Select All
-            </div>
+            </button>
           ) : (
-            <div className="dropdown-option" onClick={optionNoneHandler}>
+            <button className={selectNoneClassName} onClick={optionNoneHandler}>
               None
-            </div>
+            </button>
           )}
           {options.map((option) => {
             let { value, label } = option;
 
             if (typeof option === "string") {
-                value = option;
-                label = option;
+              value = option;
+              label = option;
             }
 
             const selected = selectedValues.has(value);
 
-            let optionClassName = "dropdown-option";
-            if (selected) optionClassName += " selected";
+            let optionClassName = classNames(styles.dropdownOption, {
+              [styles.selected]: selected,
+            });
 
             return (
-              <div
+              <button
                 className={optionClassName}
                 key={value}
                 onClick={() => optionClickHandler(value)}
               >
                 {label}
-              </div>
+              </button>
             );
           })}
         </div>
